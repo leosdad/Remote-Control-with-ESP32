@@ -7,6 +7,15 @@
 // See README.MD for setup instructions and more information.
 //
 
+// TODO:
+// Update LED state based on controller connection status:
+//   - Blinking when pairing (no controllers connected)
+//   - On when at least one controller is connected
+//   - Off when all controllers are disconnected
+// - Make the gamepad reconnect automatically to this device when it is powered on
+// - Add support for vibration commands received via I2C
+// - Add support for more gamepad properties (e.g., battery level, etc.)
+
 #pragma region Includes ----------------------------------------------------------------------------
 
 #include <Bluepad32.h>
@@ -31,6 +40,12 @@
 // Dump gyroscope and accelerometer state to the console. DUMP_TO_CONSOLE must also be true.
 #define DUMP_CONSOLE_EXTRA false
 
+// LED pin number (GPIO 2).
+#define LED_PIN 2
+
+// Interval in milliseconds for LED blinking.
+#define LED_INTERVAL_MS 500
+
 // Represents the state of a game controller.
 struct GamepadState {
     uint8_t index;         // Controller index (8-bit)
@@ -54,6 +69,22 @@ struct GamepadState {
     uint32_t accelZ;       // Accelerometer Z (32-bit)
 } __attribute__((packed));
 
+// Enum for LED states
+enum class LedState {
+    Off,
+    Blinking,
+    On
+};
+
+// Current LED state variable
+LedState ledState = LedState::Blinking;
+
+// LED state for blinking.
+bool ledBlinkState = false;
+
+// Last time the LED was toggled.
+unsigned long lastToggle = 0;
+
 // Array of connected controllers.
 ControllerPtr myControllers[BP32_MAX_GAMEPADS];
 
@@ -64,8 +95,8 @@ GamepadState state;
 
 #pragma region Callbacks ---------------------------------------------------------------------------
 
-// Gets called any time a new gamepad is connected. Up to BP32_MAX_GAMEPADS
-// controllers can be connected at the same time.
+// Gets called any time a new gamepad is connected. Up to BP32_MAX_GAMEPADS controllers can be
+// connected at the same time.
 void onConnectedController(ControllerPtr ctl)
 {
     bool foundEmptySlot = false;
@@ -195,9 +226,6 @@ void processGamepad(ControllerPtr ctl)
     state.accelY = ctl->accelY();           // Accelerometer Y (32-bit)
     state.accelZ = ctl->accelZ();           // Accelerometer Z (32-bit)
 
-    // TODO: flash LED here
-    // See include/ArduinoController.h for all the available functions.
-
 #if DUMP_TO_CONSOLE
     dumpGamepad(ctl);
 #endif
@@ -205,7 +233,6 @@ void processGamepad(ControllerPtr ctl)
 
 // Processes all connected controllers, assures each one is valid and connected,
 // and updates their state.
-
 void processControllers()
 {
     for(auto myController : myControllers) {
@@ -221,6 +248,18 @@ void processControllers()
     }
 }
 
+// Blinks the LED at a predefined interval.
+void blinkLED(unsigned long interval)
+{
+    unsigned long now = millis();
+
+    if (now - lastToggle >= interval) {
+        ledBlinkState = !ledBlinkState;
+        digitalWrite(LED_PIN, ledBlinkState ? LOW : HIGH); // Toggle LED (active low)
+        lastToggle = now;
+    }
+}
+
 #pragma endregion
 
 // Arduino setup function. Runs in CPU 1
@@ -232,6 +271,9 @@ void setup()
         // for debugging purposes, so that you can see the output in the serial console.
         ;
     }
+
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);    // Turn the LED off (active low)
 
 #if PRINT_TO_CONSOLE
     // Print firmware version and Bluetooth address
@@ -268,6 +310,15 @@ void setup()
 // Arduino loop function. Runs in CPU 1.
 void loop()
 {
+    // Update the LED state based on the current ledState variable.
+    if(ledState == LedState::On) {
+        digitalWrite(LED_PIN, LOW); // Turn the LED on (active low)
+    } else if(ledState == LedState::Blinking) {
+        blinkLED(LED_INTERVAL_MS);
+    } else {
+        digitalWrite(LED_PIN, HIGH); // Turn the LED off (active low)
+    }
+
     // This call fetches all the controllers' data. Call this function in your main loop.
     // The controllers' pointer (the ones received in the callbacks) gets updated automatically.
     bool dataUpdated = BP32.update();
