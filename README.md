@@ -13,7 +13,7 @@ There is a [thread](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8694) at th
 
 Hardware:
 
-- Any development board able to run Arduino Core for ESP32. (I chose the ESP32S NodeMCU ESP-12 because it fits neatly inside an ft 30 x 45 case.)
+- Any development board able to run Arduino Core for ESP32. (I chose the ESP32S NodeMCU ESP-12 because it fits neatly inside an ft 30 × 45 case.)
 - Any Bluetooth game controller that supports Arduino mode (In my case it is a Gamesir Nova Lite)
 - A fischertechnik TXT 4.0 or RX controller
 
@@ -22,8 +22,8 @@ Parts to build the custom ft module:
 - 2x3-pin IDC box header, male
 - Two 2×3-pin IDC connectors, female
 - 6-way ribbon cable
-- 30 x 45 battery case bottom 32263, or the bottom part of a ft sound module 130589
-- Single-sided 30 x 30 perfboard
+- 30 × 45 battery case bottom 32263, or the bottom part of a ft sound module 130589
+- Single-sided 30 × 30 perfboard
 
 Development tools:
 
@@ -34,7 +34,7 @@ Development tools:
 
 ## Contents of the `files` folder
 
-- The STL file included may be useful as a starting point in case you want to 3D-print an ft-compatible 30 x 45 case yourself.
+- The STL file included may be useful as a starting point in case you want to 3D-print an ft-compatible 30 × 45 case yourself.
 - There are also Fritzing files for the PCB and for a breadboard.
 - You may use the ROBO Pro Coding project included, `RC_vehicle_*.ft`, to build a test vehicle. The project includes the `RC_lib` and `Math_lib` libraries with Pyhton code created to ease the decoding of the gamepad inputs.
 
