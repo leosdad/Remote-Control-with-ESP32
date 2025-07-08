@@ -63,4 +63,4 @@ The connections between the MCU and the IDC connector are:
 - The gamepad Home button (the "chicken") should be steady yellow-green indicating it is in Android mode. If it is not, Press and hold Home + A until it does.
 - To force pair the controller with the ESP32, press and hold Home + Screenshot (the button immediately below Home, with a small circle inside).
 - If the ROBO Code program aborts, try pressing the ESP32 with a small screwdriver or similar tool, or simply disconnect and reconnect the I2C cable.
-- There is a function called Detect_I2C_devices() in the ROBO Pro code RC_lib file. It will show all devices connected to the TXT 4.0 I2C port. It should display [0x18] which corresponds to I2C_SLAVE_ADDR in rc_esp32.ino.
+- There is a function called Detect_I2C_devices() in the ROBO Pro code RC_lib file. It will show all devices connected to the TXT 4.0 I2C port. The address `0x28`, which corresponds to I2C_SLAVE_ADDR in `rc_esp32.ino`, should appear.

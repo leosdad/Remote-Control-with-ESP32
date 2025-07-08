@@ -26,7 +26,7 @@
 #pragma region Declarations ------------------------------------------------------------------------
 
 // I2C slave address for this device.
-#define I2C_SLAVE_ADDR 0x18
+#define I2C_SLAVE_ADDR 0x28
 
 // Delay in milliseconds for the main loop.
 #define LOOP_DELAY_MS 10
