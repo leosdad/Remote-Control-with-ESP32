@@ -1,9 +1,9 @@
 
 # Remote Control with ESP32 by Rubem Pechansky
 
-The motivation to build this module is the lack of a current physical remote control in the fischertechnik current lineup, and the fact that their controllers are unable to act as universal Bluetooth receivers (as of 2024-2025, at least). It was primarily designed to be used with fischertechnik's TXT 4.0 controller, but it can easily be used with other hardware that has a 3.3 V I2C bus (not 5 V).
+The reason I built this module is the lack of a current physical remote control in the fischertechnik current lineup, and the fact that their controllers are unable to act as universal Bluetooth receivers (as of 2024-2025, at least). It was primarily designed to be used with fischertechnik's TXT 4.0 controller, but it can easily be used with other hardware that has a 3.3 V I2C bus (not 5 V).
 
-The included ESP32 sketch uses the Bluepad32 library to receive signals from a standard Bluetooth game controller and forward them via the I2C bus.
+The ESP32 sketch included uses the Bluepad32 library to receive signals from a standard Bluetooth game controller and forward them via the I2C bus connected to the fischertechnik controller. The example ROBO Pro Coding project included decodes these commands and uses them to control a test vehicle.
 
 There is a [thread](https://forum.ftcommunity.de/viewtopic.php?f=8&t=8694) at the ftc forum with the original discussion, pictures of models, and very useful responses from other members.
 
@@ -19,8 +19,8 @@ Hardware:
 
 Parts to build the custom ft module:
 
-- Shrouded 2x3-pin IDC box header, male
-- 2 x shrouded 2×3-pin IDC connector, female
+- 2x3-pin IDC box header, male
+- Two 2×3-pin IDC connectors, female
 - 6-way ribbon cable
 - 30 x 45 battery case bottom 32263, or the bottom part of a ft sound module 130589
 - Single-sided 30 x 30 perfboard
