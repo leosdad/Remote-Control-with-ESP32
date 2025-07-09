@@ -1,6 +1,6 @@
 //
 // This ESP32 sketch uses the Bluepad32 library to receive signals from a standard Bluetooth
-// game controller and forward them via the I2C bus.
+// game controller and forward them to a I2C bus.
 //
 // The code is based on the Bluepad32 library Controller example by Ricardo Quesada
 //
