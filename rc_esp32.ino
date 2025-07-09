@@ -8,11 +8,7 @@
 //
 
 // TODO:
-// Update LED state based on controller connection status:
-//   - Blinking when pairing (no controllers connected)
-//   - On when at least one controller is connected
-//   - Off when all controllers are disconnected
-// - Make the gamepad reconnect automatically to this device when it is powered on
+// - Make the gamepad reconnect automatically and quickly to this device when it is powered on
 // - Add support for vibration commands received via I2C
 // - Add support for more gamepad properties (e.g., battery level, etc.)
 
@@ -42,6 +38,9 @@
 
 // LED pin number (GPIO 2).
 #define LED_PIN 2
+
+// LED brightness level (0-255).
+#define LED_BRIGHTNESS 80
 
 // Interval in milliseconds for LED blinking.
 #define LED_INTERVAL_MS 500
@@ -115,6 +114,11 @@ void onConnectedController(ControllerPtr ctl)
             break;
         }
     }
+
+    if (ctl->hasData()) {
+        ledState = LedState::On;
+    }
+
 #if PRINT_TO_CONSOLE
     if (!foundEmptySlot) {
         Serial.println("CALLBACK: Controller connected, but could not found empty slot");
@@ -143,6 +147,16 @@ void onDisconnectedController(ControllerPtr ctl)
         Serial.println("CALLBACK: Controller disconnected, but not found in myControllers");
     }
 #endif
+
+    // Set the LED state to On if any controller is still connected, otherwise set it to Blinking.
+    bool anyLeft = false;
+    for (int j = 0; j < BP32_MAX_GAMEPADS; j++) {
+        if (myControllers[j] && myControllers[j]->isConnected()) {
+            anyLeft = true;
+            break;
+        }
+    }
+    ledState = anyLeft ? LedState::On : LedState::Blinking;
 }
 
 // This function is called when the master device requests data from this device.
@@ -235,15 +249,16 @@ void processGamepad(ControllerPtr ctl)
 // and updates their state.
 void processControllers()
 {
-    for(auto myController : myControllers) {
-        if(myController && myController->isConnected() && myController->hasData()) {
-            if(myController->isGamepad()) {
+    for (auto myController : myControllers) {
+        if (myController && myController->isConnected() && myController->hasData()) {
+            if (myController->isGamepad()) {
                 processGamepad(myController);
-            } else {
-#if PRINT_TO_CONSOLE
-                Serial.printf("Unsupported controller\n");
-#endif
             }
+#if PRINT_TO_CONSOLE
+            else {
+                Serial.printf("Unsupported controller\n");
+            }
+#endif
         }
     }
 }
@@ -255,7 +270,7 @@ void blinkLED(unsigned long interval)
 
     if (now - lastToggle >= interval) {
         ledBlinkState = !ledBlinkState;
-        digitalWrite(LED_PIN, ledBlinkState ? LOW : HIGH); // Toggle LED (active low)
+        analogWrite(LED_PIN, ledBlinkState ? LED_BRIGHTNESS : 0);
         lastToggle = now;
     }
 }
@@ -312,11 +327,11 @@ void loop()
 {
     // Update the LED state based on the current ledState variable.
     if(ledState == LedState::On) {
-        digitalWrite(LED_PIN, LOW); // Turn the LED on (active low)
+        analogWrite(LED_PIN, LED_BRIGHTNESS);
     } else if(ledState == LedState::Blinking) {
         blinkLED(LED_INTERVAL_MS);
     } else {
-        digitalWrite(LED_PIN, HIGH); // Turn the LED off (active low)
+        digitalWrite(LED_PIN, LOW);
     }
 
     // This call fetches all the controllers' data. Call this function in your main loop.
@@ -329,7 +344,6 @@ void loop()
     // The main loop must have some kind of "yield to lower priority task" event. Otherwise, the
     // watchdog will get triggered. If your main loop doesn't have one, just add a simple
     // vTaskDelay(1). Detailed info here: https://stackoverflow.com/questions/66278271/
-
     // vTaskDelay(LOOP_DELAY_MS);
     delay(LOOP_DELAY_MS);
 }
