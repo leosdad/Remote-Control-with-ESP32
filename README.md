@@ -37,6 +37,7 @@ Development tools:
 - The STL file included may be useful as a starting point in case you want to 3D-print an ft-compatible 30 × 45 case yourself.
 - There are also Fritzing files for the PCB and for a breadboard.
 - You may use the ROBO Pro Coding project included, `RC_vehicle_*.ft`, to build a test vehicle. The project includes the `RC_lib` and `Math_lib` libraries with Pyhton code created to ease the decoding of the gamepad inputs.
+- I have included other useful images and the photo of one of the prototype vehicles I've built with the RC module.
 
 ## Connections
 
