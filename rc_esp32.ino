@@ -9,8 +9,8 @@
 
 // TODO:
 // - Make the gamepad reconnect automatically and quickly to this device when it is powered on
-// - Add support for vibration commands received via I2C
-// - Add support for more gamepad properties (e.g., battery level, etc.)
+// - Make gamepad rumble via I2C commands
+// - Check whether gamepad properties like battery level, rumble, and player LEDs
 
 #pragma region Includes ----------------------------------------------------------------------------
 
@@ -101,10 +101,11 @@ void onConnectedController(ControllerPtr ctl)
     bool foundEmptySlot = false;
     for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
         if (myControllers[i] == nullptr) {
+
 #if PRINT_TO_CONSOLE
             Serial.printf("CALLBACK: Controller is connected, index=%d\n", i);
             // Additionally, you can get certain gamepad properties like:
-            // Model, VID, PID, BTAddr, flags, etc.
+            // Model, BTAddr, flags, etc.
             ControllerProperties properties = ctl->getProperties();
             Serial.printf("Controller model: %s, VID=0x%04x, PID=0x%04x\n", ctl->getModelName(),
                 properties.vendor_id, properties.product_id);
@@ -133,6 +134,7 @@ void onDisconnectedController(ControllerPtr ctl)
 
     for (int i = 0; i < BP32_MAX_GAMEPADS; i++) {
         if (myControllers[i] == ctl) {
+
 #if PRINT_TO_CONSOLE
             Serial.printf("CALLBACK: Controller disconnected from index=%d\n", i);
 #endif
@@ -170,13 +172,11 @@ void onReceive(int numBytes)
 {
     if(numBytes > 0) {
 
-        // TODO: handle received data / vibration
+        // TODO: handle received data / rumble command
 
         // command = Wire.read();
-        // if(command == 'a') {
-        //     // Do something
-        // } else if(command == 'b') {
-        //     // Do something else
+        // if(command == 'r') {
+        //     ctl->setRumble(0xc0 /* force */, 0xc0 /* duration */);
         // }
     }
 }
@@ -263,7 +263,7 @@ void processControllers()
     }
 }
 
-// Blinks the LED at a predefined interval.
+// Blinks the blue LED at a predefined interval.
 void blinkLED(unsigned long interval)
 {
     unsigned long now = millis();
