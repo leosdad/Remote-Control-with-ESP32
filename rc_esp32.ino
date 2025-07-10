@@ -314,8 +314,6 @@ void setup()
     // setup and see the state of Bluepad32. By default, it is disabled.
     BP32.enableBLEService(false);
 
-    // TODO: flash LED here
-
     // Start the I2C communication
     Wire.begin(I2C_SLAVE_ADDR);
     Wire.onRequest(onRequest);
